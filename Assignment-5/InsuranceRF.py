@@ -90,7 +90,7 @@ from sklearn.tree import DecisionTreeRegressor
 
 
 #%%
-model = DecisionTreeRegressor( max_depth=4,random_state=62)
+model = DecisionTreeRegressor( max_depth=5,random_state=62)
 model.fit(X_train, y_train)
 #%%
 
@@ -101,6 +101,7 @@ print('-'*70)
 #%%
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 y_pred = model.predict(X_test)
+dt_pred = y_pred.copy()
 mse = mean_squared_error(y_test, y_pred,multioutput='uniform_average')
 print(f"Mean Squared Error (MSE): {mse}")
 mae = mean_absolute_error(y_test, y_pred)
@@ -110,7 +111,7 @@ print(f"R-squared (R²): {r2}")
 
 #%%
 from sklearn.ensemble import RandomForestRegressor
-model = RandomForestRegressor(n_estimators=100,max_depth=7, random_state=33)
+model = RandomForestRegressor(n_estimators=250,max_depth=5, random_state=33)
 model.fit(X_train, y_train)
 print('Random Forest Regressor Train Score is : ' , model.score(X_train, y_train))
 print('Random Forest Regressor Test Score is : ' , model.score(X_test, y_test))
@@ -118,10 +119,29 @@ print('-'*70)
 #%%
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 y_pred = model.predict(X_test)
+rf_pred = y_pred.copy()
 mse = mean_squared_error(y_test, y_pred,multioutput='uniform_average')
 print(f"Mean Squared Error (MSE): {mse}")
 mae = mean_absolute_error(y_test, y_pred)
 print(f"Mean Absolute Error (MAE): {mae}")
 r2 = r2_score(y_test, y_pred)
 print(f"R-squared (R²): {r2}")
+
+#%%
+import matplotlib.pyplot as plt
+sorted_idx = np.argsort(y_test.values)
+y_test_sorted = y_test.values[sorted_idx]
+dt_pred_sorted = dt_pred[sorted_idx]
+rf_pred_sorted = rf_pred[sorted_idx]
+
+plt.figure(figsize=(10, 6))
+plt.plot(y_test_sorted, label="Actual Charges", color="black", linestyle="-", linewidth=2)
+plt.plot(dt_pred_sorted, label="Decision Tree Predictions", color="blue", linestyle="--")
+plt.plot(rf_pred_sorted, label="Random Forest Predictions", color="red", linestyle=":")
+
+plt.xlabel("Test Samples (Sorted)")
+plt.ylabel("Charges")
+plt.title("Actual vs Predicted Charges for Decision Tree & Random Forest")
+plt.legend()
+plt.show()
 
